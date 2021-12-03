@@ -3,6 +3,7 @@
 namespace App\Imports;
 
 use App\Models\Student;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
@@ -10,14 +11,16 @@ use Maatwebsite\Excel\Concerns\ToModel;
 use Illuminate\Support\Collection;
 
 use Maatwebsite\Excel\Concerns\ToCollection;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
+use Maatwebsite\Excel\Concerns\WithStartRow;
 
-class StudentsImport implements ToModel, SkipsEmptyRows
+class StudentsImport implements ToModel, WithChunkReading
 {
     /**
-    * @param array $row
-    *
-    * @return \Illuminate\Database\Eloquent\Model|null
-    */
+     * @param array $row
+     *
+     * @return \Illuminate\Database\Eloquent\Model|null
+     */
     public function model(array $row)
     {
 
@@ -51,9 +54,19 @@ class StudentsImport implements ToModel, SkipsEmptyRows
         ];
     }
 
+    public function startRow(): int
+    {
+        return 1;
+    }
+
+    public function batchSize(): int
+    {
+        return 500;
+    }
+
     public function chunkSize(): int
     {
-        return 1000;
+        return 500;
     }
 
 
